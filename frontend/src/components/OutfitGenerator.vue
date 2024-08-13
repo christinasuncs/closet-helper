@@ -73,8 +73,9 @@ export default {
   methods: {
     async loadImages() {
       try {
-        const images = await axios.get('http://localhost:5000/images'); // change link to whatever it is
-        console.log(images)
+        // console.log(process.env.VUE_APP_DEV_URL)
+        const images = await axios.get(`http://localhost:5000/images`); // change link to whatever it is
+        // console.log(images)
         images.data.forEach(image => {
           if(image.type == "top") {
             this.tops.push(image)
@@ -88,7 +89,7 @@ export default {
             this.accessories.push(image)
           }
         });
-        console.log(this.accessories)
+        // console.log(this.accessories)
       } catch (err) {
         console.error('Failed to load images:', err);
       }

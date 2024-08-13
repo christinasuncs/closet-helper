@@ -6,6 +6,7 @@ const multer = require('multer'); // for images
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const Image = require('./models/Image');
+const Outfit = require('./models/Outfit');
 
 const app = express()
 
@@ -37,13 +38,39 @@ const storage = new CloudinaryStorage({
   },
 });
 
-
+// fetch all images
 app.get("/images", async(req, res) => {
   try {
     const images = await Image.find({})
     res.json(images)
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch images"})
+  }
+})
+
+// fetch all outfits
+app.get("/outfits", async(req, res) => {
+  try {
+    const outfits = await Outfit.find({})
+    .populate('hat')
+    .populate('top')
+    .populate('bottom')
+    .populate('shoes')
+    .populate('accessory')
+    res.json(outfits)
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch outfits"})
+  }
+})
+
+// make/save a new outfit
+app.post("/outfits/new", async (req, res) => {
+  try {
+      const outfit = new Outfit(req.body); // pass is body to model
+      await outfit.save(); // save it
+      res.json(outfit); // output new saved outfit
+  } catch (err) {
+      res.status(500).json
   }
 })
 
