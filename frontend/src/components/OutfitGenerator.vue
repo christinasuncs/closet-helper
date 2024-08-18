@@ -1,8 +1,17 @@
 <template>
+  <v-alert
+    type="success"
+    v-model="saveAlert"
+    close-label="Close Alert"
+    title="Outfit Saved!"
+    variant="tonal"
+    closable
+    >
+  </v-alert>
   <v-container>
     <v-row>
       <v-col>
-        <v-btn>Save</v-btn>
+        <v-btn @click="saveOutfit()" :disabled="!saveable">Save</v-btn>
       </v-col>
       <v-col>
         <v-btn @click="unlockAll()" :disabled="outfit == []">Unlock All</v-btn>
@@ -64,7 +73,9 @@ export default {
         accessory: false
       },
 
-      loading: false
+      loading: false,
+      saveAlert: false,
+      saveable: false // enables/disbales save button
     }
   },
   mounted() {
@@ -96,6 +107,7 @@ export default {
 
     },
     generate() {
+      this.saveAlert = false
       const lockedOutfit = this.outfit
 
       this.outfit = [
@@ -121,7 +133,7 @@ export default {
       if (this.locks.accessory) {
         this.outfit[4] = lockedOutfit[4]
       }
-
+      this.saveable = true
     },
     getRandomItem(items) {
       const arrLength = items.length
@@ -161,6 +173,31 @@ export default {
         bottom: false,
         shoes: false,
         accessory: false
+      }
+    },
+    async saveOutfit() {
+      try {
+        const outfitIds = {
+          hat: this.outfit[0]._id,
+          top: this.outfit[1]._id,
+          bottom: this.outfit[2]._id,
+          shoes: this.outfit[3]._id,
+          accessory: this.outfit[4]._id
+        }
+        // outfitIds.push(this.outfit[index]._id)
+        console.log(outfitIds)
+        await axios.post('http://localhost:5000/api/outfit/new', outfitIds)
+
+        console.log("outfit saved")
+
+        this.saveAlert = true
+        this.saveable = false
+        // timer for alert
+        setTimeout(() => {
+          this.showAlert = false;
+        }, 3000); // Hide alert after 3 seconds
+      } catch (err) {
+        console.error('Failed to save outfit:', err);
       }
     }
   },
