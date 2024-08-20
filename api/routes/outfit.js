@@ -55,4 +55,19 @@ router.delete("/delete/:id", async(req, res) => {
   }
 })
 
+// edit outfit
+router.put("/edit/:id", async(req, res) => {
+  try {
+    const id = req.params.id;
+    const outfitChanges = req.body
+    const editedOutfit = await Outfit.findByIdAndUpdate(id, outfitChanges, {new: true})
+    if (!editedOutfit) {
+      return res.status(404).json({message: "Outfit not found"})
+    }
+    res.json(editedOutfit)
+  } catch (err) {
+    res.status(500).json({error: err.message})
+  }
+})
+
 module.exports = router;
