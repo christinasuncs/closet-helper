@@ -12,6 +12,7 @@ router.get("/", async(req, res) => {
     .populate('bottom')
     .populate('shoes')
     .populate('accessory')
+    .populate('tags')
     res.json(outfits)
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch outfits"})

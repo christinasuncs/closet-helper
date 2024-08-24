@@ -80,6 +80,13 @@
         <v-card-title>Edit Outfit</v-card-title>
         <v-card-text>
           <v-form>
+            <v-select  
+              v-model="value"
+              :items="tags.map(tag => tag.name)"
+              label="Tags"
+              chips
+              multiple>
+            </v-select>
             <!-- hat + hat dropdown -->
             <v-select
               v-model="editedOutfit.hat"
@@ -234,7 +241,7 @@
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="blue darken-1" text @click="">Save</v-btn>
+          <v-btn color="blue darken-1" text @click="saveEditedOutfit()">Save</v-btn>
           <v-btn color="grey darken-1" text @click="edit_outfit_dialog = false">Cancel</v-btn>
         </v-card-actions>
       </v-card>
@@ -263,19 +270,22 @@ export default {
         top: '',
         bottom: '',
         shoes: '',
-        accessory: ''
-      }
+        accessory: '',
+        tags: []
+      },
+      tags: []
     }
   }, 
   mounted() {
     this.loadOutfits()
     this.loadImages()
+    this.loadTags()
   },
   methods: {
     async loadImages() {
       try {
         // console.log(process.env.VUE_APP_DEV_URL)
-        const images = await axios.get(`http://localhost:5000/images`); // change link to whatever it is
+        const images = await axios.get(`http://localhost:5000/api/images`); // change link to whatever it is
         // console.log(images)
         images.data.forEach(image => {
           if(image.type == "top") {
@@ -304,6 +314,14 @@ export default {
         console.error('Failed to load outfits:', err);
       }
     },
+    async loadTags() {
+      try {
+        const tags = await axios.get(`http://localhost:5000/api/tags`)
+        this.tags = tags.data
+      } catch (err) {
+        console.error('Failed to load tags:', err);
+      }
+    },
     async deleteOutfit(id){
       try {
         console.log(id)
@@ -326,8 +344,16 @@ export default {
       // + before/after behaviour
       // restructure editedOutfit to only keep ids
       try {
-        await axios.put(`http://localhost:5000/api/outfit/edit/${this.editedOutfit.id}`, this.editedOutfit)
-        console.log("saved edits successful")
+        this.editedOutfit = {
+          _id: this.editedOutfit._id,
+          hat: this.editedOutfit.hat._id,
+          top: this.editedOutfit.top._id,
+          bottom: this.editedOutfit.bottom._id,
+          shoes: this.editedOutfit.shoes._id,
+          accessory: this.editedOutfit.accessory._id,
+          tags: this.editedOutfit.tags
+        }
+        await axios.put(`http://localhost:5000/api/outfit/edit/${this.editedOutfit._id}`, this.editedOutfit)
         this.loadOutfits()
         this.edit_outfit_dialog = false
       } catch (err) {

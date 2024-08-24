@@ -25,11 +25,7 @@ const outfitSchema = new mongoose.Schema({
         ref: 'Image',
         required: true
     },
-    tags: [
-        {
-            name: String,
-        }
-    ]
+    tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }]
 });
 
 module.exports = mongoose.model('Outfit', outfitSchema);

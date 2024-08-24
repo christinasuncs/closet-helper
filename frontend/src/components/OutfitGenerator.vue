@@ -85,7 +85,7 @@ export default {
     async loadImages() {
       try {
         // console.log(process.env.VUE_APP_DEV_URL)
-        const images = await axios.get(`http://localhost:5000/images`); // change link to whatever it is
+        const images = await axios.get(`http://localhost:5000/api/images/`); // change link to whatever it is
         // console.log(images)
         images.data.forEach(image => {
           if(image.type == "top") {

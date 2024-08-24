@@ -8,6 +8,8 @@ const Image = require('./models/Image');
 
 const database = require('./utils/database');
 const outfit_routes = require("./routes/outfit.js");
+const image_routes = require('./routes/image.js');
+const tag_routes = require('./routes/tag.js');
 
 const app = express()
 
@@ -31,19 +33,9 @@ const storage = new CloudinaryStorage({
   },
 });
 
-
 app.use("/api/outfit", outfit_routes);
-
-// fetch all images
-app.get("/images", async(req, res) => {
-  try {
-    const images = await Image.find({})
-    res.json(images)
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch images"})
-  }
-})
-
+app.use('/api/images', image_routes)
+app.use('/api/tags', tag_routes)
 
 
 const PORT = process.env.PORT || 5000;
