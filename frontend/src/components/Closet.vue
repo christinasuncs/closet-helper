@@ -80,8 +80,9 @@
         <v-card-title>Edit Outfit</v-card-title>
         <v-card-text>
           <v-form>
+            <v-btn prepend-icon="mdi-plus-box-outline" @click="openNewTagModal()">New Tag</v-btn>
             <v-select  
-              v-model="value"
+              v-model="editedOutfit.tags"
               :items="tags.map(tag => tag.name)"
               label="Tags"
               chips
@@ -246,6 +247,19 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <!-- New Tag Dialog -->
+    <v-dialog v-model="new_tag_dialog" max-width="400px">
+      <v-card>
+        <v-card-title>Create New Tag</v-card-title>
+        <v-card-text>
+          <v-form>
+            <v-text-field
+              v-model="newTag"
+            ></v-text-field>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -264,6 +278,7 @@ export default {
       outfits: [],
       deleteAlert: false,
       edit_outfit_dialog: false,
+      new_tag_dialog: false,
 
       editedOutfit: {
         hat: '',
@@ -273,7 +288,8 @@ export default {
         accessory: '',
         tags: []
       },
-      tags: []
+      tags: [],
+      newTag: ''
     }
   }, 
   mounted() {
@@ -284,9 +300,7 @@ export default {
   methods: {
     async loadImages() {
       try {
-        // console.log(process.env.VUE_APP_DEV_URL)
         const images = await axios.get(`http://localhost:5000/api/images`); // change link to whatever it is
-        // console.log(images)
         images.data.forEach(image => {
           if(image.type == "top") {
             this.tops.push(image)
@@ -300,7 +314,6 @@ export default {
             this.accessories.push(image)
           }
         });
-        console.log(this.hats)
       } catch (err) {
         console.error('Failed to load images:', err);
       }
@@ -308,7 +321,6 @@ export default {
     async loadOutfits() {
       try {
         const outfits = await axios.get(`http://localhost:5000/api/outfit`)
-        // console.log(outfits)
         this.outfits = outfits.data
       } catch (err) {
         console.error('Failed to load outfits:', err);
@@ -324,18 +336,20 @@ export default {
     },
     async deleteOutfit(id){
       try {
-        console.log(id)
         await axios.delete(`http://localhost:5000/api/outfit/delete/${id}`)
-        console.log("delete successful")
         this.loadOutfits()
         this.deleteAlert = true
       } catch (err) {
         console.log("Failed to delete outfit: ", err)
       }
     },
+    openNewTagModal(){
+      this.new_tag_dialog = true
+    },
     openEditModal(outfit) {
       this.edit_outfit_dialog = true
       this.editedOutfit = outfit
+      this.editedOutfit.tags = outfit.tags.map(tag => tag.name)
       console.log(this.editedOutfit)
     },
     async saveEditedOutfit() {
@@ -344,6 +358,11 @@ export default {
       // + before/after behaviour
       // restructure editedOutfit to only keep ids
       try {
+        const tagNameToIdMap = {}
+        this.tags.forEach(tag => {
+          tagNameToIdMap[tag.name] = tag;
+        })
+
         this.editedOutfit = {
           _id: this.editedOutfit._id,
           hat: this.editedOutfit.hat._id,
@@ -351,8 +370,9 @@ export default {
           bottom: this.editedOutfit.bottom._id,
           shoes: this.editedOutfit.shoes._id,
           accessory: this.editedOutfit.accessory._id,
-          tags: this.editedOutfit.tags
+          tags: this.editedOutfit.tags.map(tag => tagNameToIdMap[tag]._id)
         }
+        
         await axios.put(`http://localhost:5000/api/outfit/edit/${this.editedOutfit._id}`, this.editedOutfit)
         this.loadOutfits()
         this.edit_outfit_dialog = false
@@ -362,7 +382,6 @@ export default {
     },
     selectHat(item) {
       this.editedOutfit.hat = item;
-      // console.log(this.editedOutfit.hat)
     },
     selectTop(item) {
       this.editedOutfit.top = item;
