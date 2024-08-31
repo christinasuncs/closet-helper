@@ -9,7 +9,7 @@
     >
   </v-alert>
 
-  <v-carousel style="width: 600px;">
+  <v-carousel class="justify-center">
     <v-carousel-item
       v-for="(outfit, index) in outfits"
       :key="index"
@@ -40,9 +40,20 @@
   </v-carousel>
 
   <v-container fluid>
+    <div style="display: flex;">
+      <v-select
+        style="width: 20%; margin-right: 1%;"
+        label="Filter by Tags"
+        v-model="filterTags"
+        :items="tags.map(tag => tag.name)"
+      ></v-select>  
+      <v-btn @click="clearFilters()">Clear Filters</v-btn>
+    </div>
+    <v-divider></v-divider>
+
     <!-- Grid Layout for Saved Outfits -->
     <v-row class="mt-4" dense>
-      <v-col cols="12" md="4" v-for="(outfit, index) in outfits" :key="index">
+      <v-col cols="12" md="4" v-for="(outfit, index) in filteredOutfits" :key="index">
         <v-card outlined>
           <v-card-title class="justify-center">
             <v-row class="justify-center" v-for="(tag, index) in outfit.tags" :key="index">{{ tag.name }}</v-row>
@@ -278,6 +289,7 @@ export default {
       accessories: [],
 
       outfits: [],
+      filteredOutfits: [],
       deleteAlert: false,
       edit_outfit_dialog: false,
       new_tag_dialog: false,
@@ -291,7 +303,8 @@ export default {
         tags: []
       },
       tags: [],
-      newTag: ''
+      newTag: '',
+      filterTags: ''
     }
   }, 
   mounted() {
@@ -299,7 +312,27 @@ export default {
     this.loadImages()
     this.loadTags()
   },
+  watch: {
+    // watch tags filter
+    'filterTags': function(newValue, oldValue) {
+      console.log(newValue, oldValue)
+      if (newValue == ''){
+        this.filteredOutfits = this.outfits
+      } else {
+        this.applyFilter()
+      }
+    }
+  },
   methods: {
+    applyFilter(){
+      this.filteredOutfits = this.outfits.filter(outfit => {
+        const outfitTags = outfit.tags.map(tag => tag.name)
+        return outfitTags.includes(this.filterTags)
+      })
+    },
+    clearFilters(){
+      this.filterTags = ''
+    },
     async loadImages() {
       try {
         const images = await axios.get(`http://localhost:5000/api/images`); // change link to whatever it is
@@ -324,6 +357,7 @@ export default {
       try {
         const outfits = await axios.get(`http://localhost:5000/api/outfit`)
         this.outfits = outfits.data
+        this.filteredOutfits = outfits.data
       } catch (err) {
         console.error('Failed to load outfits:', err);
       }
