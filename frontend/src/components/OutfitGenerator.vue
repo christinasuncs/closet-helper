@@ -11,7 +11,7 @@
   <v-container>
     <v-row>
       <v-col>
-        <v-btn @click="saveOutfit()" :disabled="!saveable">Save</v-btn>
+        <v-btn @click="addTags()" :disabled="!saveable">Save</v-btn>
       </v-col>
       <v-col>
         <v-btn @click="unlockAll()" :disabled="outfit == []">Unlock All</v-btn>
@@ -48,6 +48,37 @@
         <v-btn color="primary" @click="generate" append-icon="mdi-reload" :loading="loading">Generate</v-btn>
       </v-col>
     </v-row>
+    <!-- add tags to outfit dialog -->
+    <v-dialog v-model="add_tags_dialog" max-width="400px">
+      <v-card>
+        <v-card-title>Add Tags to this Outfit</v-card-title>
+        <v-card-text>
+          <v-select  
+              v-model="selectedTags"
+              :items="tags.map(tag => tag.name)"
+              label="Tags"
+              chips
+              multiple>
+            </v-select>
+        </v-card-text>
+        <v-btn @click="new_tag_dialog=true">New Tag</v-btn>
+        <v-btn @click="saveOutfit()">Save</v-btn>
+      </v-card>
+    </v-dialog>
+    <!-- New Tag Dialog -->
+    <v-dialog v-model="new_tag_dialog" max-width="400px">
+      <v-card>
+        <v-card-title>Create New Tag</v-card-title>
+        <v-card-text>
+          <v-form>
+            <v-text-field
+              v-model="newTag"
+            ></v-text-field>
+          </v-form>
+        </v-card-text>
+        <v-btn @click="saveNewTag()">Save</v-btn>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -75,18 +106,22 @@ export default {
 
       loading: false,
       saveAlert: false,
-      saveable: false // enables/disbales save button
+      saveable: false, // enables/disbales save button
+
+      add_tags_dialog: false,
+      new_tag_dialog: false,
+      tags: [],
+      selectedTags: []
     }
   },
   mounted() {
     this.loadImages()
+    this.loadTags()
   },
   methods: {
     async loadImages() {
       try {
-        // console.log(process.env.VUE_APP_DEV_URL)
         const images = await axios.get(`http://localhost:5000/api/images/`); // change link to whatever it is
-        // console.log(images)
         images.data.forEach(image => {
           if(image.type == "top") {
             this.tops.push(image)
@@ -100,11 +135,18 @@ export default {
             this.accessories.push(image)
           }
         });
-        // console.log(this.accessories)
       } catch (err) {
         console.error('Failed to load images:', err);
       }
 
+    },    
+    async loadTags() {
+      try {
+        const tags = await axios.get(`http://localhost:5000/api/tags`)
+        this.tags = tags.data
+      } catch (err) {
+        console.error('Failed to load tags:', err);
+      }
     },
     generate() {
       this.saveAlert = false
@@ -177,18 +219,22 @@ export default {
     },
     async saveOutfit() {
       try {
+        const tagNameToIdMap = {}
+        this.tags.forEach(tag => {
+          tagNameToIdMap[tag.name] = tag;
+        })
+
         const outfitIds = {
           hat: this.outfit[0]._id,
           top: this.outfit[1]._id,
           bottom: this.outfit[2]._id,
           shoes: this.outfit[3]._id,
-          accessory: this.outfit[4]._id
+          accessory: this.outfit[4]._id,
+          tags: this.selectedTags.map(tag => tagNameToIdMap[tag]._id)
         }
-        // outfitIds.push(this.outfit[index]._id)
-        console.log(outfitIds)
         await axios.post('http://localhost:5000/api/outfit/new', outfitIds)
 
-        console.log("outfit saved")
+        this.add_tags_dialog = false
 
         this.saveAlert = true
         this.saveable = false
@@ -198,6 +244,19 @@ export default {
         }, 3000); // Hide alert after 3 seconds
       } catch (err) {
         console.error('Failed to save outfit:', err);
+      }
+    },
+    addTags(){
+      this.add_tags_dialog = true
+    },
+    async saveNewTag() {
+      try {
+        const newTag = {name: this.newTag}
+        await axios.post(`http://localhost:5000/api/tags/new`, newTag)
+        this.loadTags()
+        this.new_tag_dialog = false
+      } catch (err) {
+        console.log("Failed to create new tag: ", err)
       }
     }
   },

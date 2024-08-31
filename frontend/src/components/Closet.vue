@@ -45,8 +45,9 @@
       <v-col cols="12" md="4" v-for="(outfit, index) in outfits" :key="index">
         <v-card outlined>
           <v-card-title class="justify-center">
-            <span class="font-weight-bold">Outfit {{ index + 1 }}</span>
+            <v-row class="justify-center" v-for="(tag, index) in outfit.tags" :key="index">{{ tag.name }}</v-row>
           </v-card-title>
+          <br/>
           <v-card-text>
             <v-row>
               <v-col cols="6">
@@ -258,6 +259,7 @@
             ></v-text-field>
           </v-form>
         </v-card-text>
+        <v-btn @click="saveNewTag()">Save</v-btn>
       </v-card>
     </v-dialog>
   </v-container>
@@ -350,7 +352,6 @@ export default {
       this.edit_outfit_dialog = true
       this.editedOutfit = outfit
       this.editedOutfit.tags = outfit.tags.map(tag => tag.name)
-      console.log(this.editedOutfit)
     },
     async saveEditedOutfit() {
       // have editedOutfit -> body of what changed during edit
@@ -378,6 +379,16 @@ export default {
         this.edit_outfit_dialog = false
       } catch (err) {
         console.log("Failed to save edited outfit: ", err)
+      }
+    },
+    async saveNewTag() {
+      try {
+        const newTag = {name: this.newTag}
+        await axios.post(`http://localhost:5000/api/tags/new`, newTag)
+        this.loadTags()
+        this.new_tag_dialog = false
+      } catch (err) {
+        console.log("Failed to create new tag: ", err)
       }
     },
     selectHat(item) {
