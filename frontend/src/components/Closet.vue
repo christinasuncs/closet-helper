@@ -39,13 +39,16 @@
     </v-carousel-item>
   </v-carousel>
 
+  <!-- Filter Select -->
   <v-container fluid>
     <div style="display: flex;">
       <v-select
+        chips
         style="width: 20%; margin-right: 1%;"
         label="Filter by Tags"
         v-model="filterTags"
         :items="tags.map(tag => tag.name)"
+        multiple
       ></v-select>  
       <v-btn @click="clearFilters()">Clear Filters</v-btn>
     </div>
@@ -304,7 +307,7 @@ export default {
       },
       tags: [],
       newTag: '',
-      filterTags: ''
+      filterTags: []
     }
   }, 
   mounted() {
@@ -315,7 +318,7 @@ export default {
   watch: {
     // watch tags filter
     'filterTags': function(newValue, oldValue) {
-      console.log(newValue, oldValue)
+      console.log(this.filterTags)
       if (newValue == ''){
         this.filteredOutfits = this.outfits
       } else {
@@ -324,14 +327,25 @@ export default {
     }
   },
   methods: {
+    filterCheck(array1, array2) {
+      // check if filterTags[] is part of outfitTags[]
+      // make sure everything in arr1 is in arr2
+      for (let i = 0; i < array1.length; i++) {
+        if (!array2.includes(array1[i])) {
+          return false
+        }
+      }
+      return true
+    },
     applyFilter(){
       this.filteredOutfits = this.outfits.filter(outfit => {
-        const outfitTags = outfit.tags.map(tag => tag.name)
-        return outfitTags.includes(this.filterTags)
+        const outfitTags = outfit.tags.map(tag => tag.name) // gives array of tag names for each outfit
+        // make sure filterTags in outfitTags
+        return this.filterCheck(this.filterTags, outfitTags)
       })
     },
     clearFilters(){
-      this.filterTags = ''
+      this.filterTags = []
     },
     async loadImages() {
       try {
