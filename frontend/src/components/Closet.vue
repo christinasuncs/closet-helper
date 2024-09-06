@@ -9,7 +9,7 @@
     >
   </v-alert>
 
-  <v-carousel class="justify-center">
+  <v-carousel class="justify-center" v-model="activeSlide" show-arrows="hover">
     <v-carousel-item
       v-for="(outfit, index) in outfits"
       :key="index"
@@ -307,7 +307,9 @@ export default {
       },
       tags: [],
       newTag: '',
-      filterTags: []
+      filterTags: [],
+
+      activeSlide: 0
     }
   }, 
   mounted() {
