@@ -121,7 +121,7 @@ export default {
   methods: {
     async loadImages() {
       try {
-        const images = await axios.get(`http://localhost:5000/api/images/`); // change link to whatever it is
+        const images = await axios.get(`https://closet-backend-huo7.onrender.com/api/images/`); // change link to whatever it is
         images.data.forEach(image => {
           if(image.type == "top") {
             this.tops.push(image)
@@ -142,7 +142,7 @@ export default {
     },    
     async loadTags() {
       try {
-        const tags = await axios.get(`http://localhost:5000/api/tags`)
+        const tags = await axios.get(`https://closet-backend-huo7.onrender.com/api/tags`)
         this.tags = tags.data
       } catch (err) {
         console.error('Failed to load tags:', err);
@@ -232,7 +232,7 @@ export default {
           accessory: this.outfit[4]._id,
           tags: this.selectedTags.map(tag => tagNameToIdMap[tag]._id)
         }
-        await axios.post('http://localhost:5000/api/outfit/new', outfitIds)
+        await axios.post('https://closet-backend-huo7.onrender.com/api/outfit/new', outfitIds)
 
         this.add_tags_dialog = false
 
@@ -252,7 +252,7 @@ export default {
     async saveNewTag() {
       try {
         const newTag = {name: this.newTag}
-        await axios.post(`http://localhost:5000/api/tags/new`, newTag)
+        await axios.post(`https://closet-backend-huo7.onrender.com/api/tags/new`, newTag)
         this.loadTags()
         this.new_tag_dialog = false
       } catch (err) {

@@ -351,7 +351,7 @@ export default {
     },
     async loadImages() {
       try {
-        const images = await axios.get(`http://localhost:5000/api/images`); // change link to whatever it is
+        const images = await axios.get(`https://closet-backend-huo7.onrender.com/api/images`); // change link to whatever it is
         images.data.forEach(image => {
           if(image.type == "top") {
             this.tops.push(image)
@@ -371,7 +371,7 @@ export default {
     },
     async loadOutfits() {
       try {
-        const outfits = await axios.get(`http://localhost:5000/api/outfit`)
+        const outfits = await axios.get(`https://closet-backend-huo7.onrender.com/api/outfit`)
         this.outfits = outfits.data
         this.filteredOutfits = outfits.data
       } catch (err) {
@@ -380,7 +380,7 @@ export default {
     },
     async loadTags() {
       try {
-        const tags = await axios.get(`http://localhost:5000/api/tags`)
+        const tags = await axios.get(`https://closet-backend-huo7.onrender.com/api/tags`)
         this.tags = tags.data
       } catch (err) {
         console.error('Failed to load tags:', err);
@@ -388,7 +388,7 @@ export default {
     },
     async deleteOutfit(id){
       try {
-        await axios.delete(`http://localhost:5000/api/outfit/delete/${id}`)
+        await axios.delete(`https://closet-backend-huo7.onrender.com/api/outfit/delete/${id}`)
         this.loadOutfits()
         this.deleteAlert = true
       } catch (err) {
@@ -424,7 +424,7 @@ export default {
           tags: this.editedOutfit.tags.map(tag => tagNameToIdMap[tag]._id)
         }
         
-        await axios.put(`http://localhost:5000/api/outfit/edit/${this.editedOutfit._id}`, this.editedOutfit)
+        await axios.put(`https://closet-backend-huo7.onrender.com/api/outfit/edit/${this.editedOutfit._id}`, this.editedOutfit)
         this.loadOutfits()
         this.edit_outfit_dialog = false
       } catch (err) {
@@ -434,7 +434,7 @@ export default {
     async saveNewTag() {
       try {
         const newTag = {name: this.newTag}
-        await axios.post(`http://localhost:5000/api/tags/new`, newTag)
+        await axios.post(`https://closet-backend-huo7.onrender.com/api/tags/new`, newTag)
         this.loadTags()
         this.new_tag_dialog = false
       } catch (err) {
