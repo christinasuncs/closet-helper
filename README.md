@@ -4,7 +4,7 @@ This project was created to help reduce time wasted on deciding what to wear eve
 ![image](https://github.com/user-attachments/assets/6a4c1072-c97f-4e7a-84e6-3abd61f01335)
 
 # Live Demo Link
-On its way!
+Closet Helper: https://closet-helper.onrender.com
 
 # Project Overview
 The Random Outfit Generator is a web app that lets users create and manage outfits by randomly combining different clothing items. Users can lock favourite pieces, save outfits, and optionally tag them for easy reference. The Closet displays saved outfits in a carousel and has a gallery where users can edit, delete, or filter by tags. New tags can also be created for better organization, giving users more freedom over their closet organization.
