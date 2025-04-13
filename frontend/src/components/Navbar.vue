@@ -9,6 +9,7 @@
         <v-spacer></v-spacer>     
         <v-tabs v-model="activeTab" background-color="primary">       
             <v-tab to="/">Home</v-tab>       
+            <v-tab to="/outfits">Outfits</v-tab>     
             <v-tab to="/closet">Closet</v-tab>     
         </v-tabs>   
     </v-app-bar> 

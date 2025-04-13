@@ -1,12 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import ClosetView from '../components/Closet.vue';
+import OutfitsView from '../components/Outfits.vue';
 import OutfitGeneratorView from '../components/OutfitGenerator.vue';
+import ClosetView from '../components/Closet.vue';
 
 const routes = [
   {
     path: '/',
     name: 'OutfitGeneratorView',
     component: OutfitGeneratorView,
+  },
+  {
+    path: '/outfits',
+    name: 'OutfitsView',
+    component: OutfitsView,
   },
   {
     path: '/closet',
