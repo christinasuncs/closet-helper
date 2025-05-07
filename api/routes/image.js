@@ -5,12 +5,16 @@ const cloudinary = require('cloudinary').v2;
 const multer = require('multer'); // for images
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
+const base_folder = 'outfit_pieces'; // base folder for images
+
 // Multer and Cloudinary storage setup
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'outfit_pieces',
-    allowedFormats: ['jpg', 'png'],
+  cloudinary,
+  params: async (req, file) => {
+    return {
+      folder: `${base_folder}`,
+      allowed_formats: ['jpg', 'png'],
+    };
   },
 });
 
@@ -27,26 +31,25 @@ router.get("/", async(req, res) => {
   }
 })
 
-// upload to cloudinary
-router.post('/upload', upload.single('image'), async (req, res) => {
+// POST upload image
+router.post("/upload", upload.single('image'), async (req, res) => {
   try {
     const imageUrl = req.file.path; // URL of the uploaded image in Cloudinary
+    const { type } = req.body;
 
-    // Create a new image document in the database
     const newImage = new Image({
       url: imageUrl,
       public_id: req.file.filename, // Store the public ID for future reference (e.g., for deletion)
-      type: "top"
+      type: type,
     });
 
     await newImage.save();
-    res.status(201).json({ message: 'Image uploaded successfully', image: newImage });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to upload image' });
+
+    res.status(201).json({ message: "Image uploaded successfully", image: newImage});
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Image upload failed" });
   }
 });
-
-
-
 module.exports = router;

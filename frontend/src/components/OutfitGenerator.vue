@@ -235,7 +235,7 @@ export default {
         await axios.post('https://closet-backend-huo7.onrender.com/api/outfit/new', outfitIds)
 
         this.add_tags_dialog = false
-
+        this.selectedTags = []
         this.saveAlert = true
         this.saveable = false
         // timer for alert
