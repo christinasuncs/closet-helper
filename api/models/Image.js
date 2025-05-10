@@ -16,7 +16,11 @@ const imageSchema = new mongoose.Schema({
         {
             name: String,
         }
-    ]
+    ],
+    archived: {
+        type: Boolean,
+        default: false
+    },
 });
 
 module.exports = mongoose.model('Image', imageSchema);

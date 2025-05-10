@@ -14,11 +14,14 @@
     <v-row justify="center" class="mb-6">
       <v-col cols="12" md="6">
         <v-file-input 
-          v-model="selectedImage"
-          label="Upload Image" 
+          v-model="selectedImages"
+          label="Upload Image(s)" 
           prepend-icon="mdi-camera" 
           accept="image/*" 
-          outlined></v-file-input>
+          outlined
+          chips
+          multiple
+          ></v-file-input>
       </v-col>
       <v-col>
         <v-select
@@ -31,7 +34,7 @@
         <v-btn
           color="primary"
           @click="uploadImage"
-          :disabled="!selectedImage || !selectedType"
+          :disabled="!selectedImages.length || !selectedType"
           block
         >Upload</v-btn>
       </v-col>
@@ -59,7 +62,7 @@ export default {
     return {
       images: [],
       filteredImages: [],
-      selectedImage: null,
+      selectedImages: [],
       snackbar: false,
       snackbarText: '',
       uploadTypes: [
@@ -126,7 +129,7 @@ export default {
       this.filterTypes = []
     },
     async uploadImage() {
-      if (!this.selectedImage) {
+      if (!this.selectedImages.length) {
         alert('Please select an image to upload.');
         return;
       }
@@ -135,7 +138,9 @@ export default {
         return;
       }
       const formData = new FormData();
-      formData.append('image', this.selectedImage);
+      this.selectedImages.forEach((image) => {
+        formData.append('images', image); // Append each selected image to the FormData object
+      });
       formData.append('type', this.selectedType);
       try {
         const response = await axios.post('http://localhost:5000/api/images/upload', formData, {
@@ -147,14 +152,12 @@ export default {
 
         this.snackbarText = 'Image uploaded successfully!',
         this.snackbar = true,
-        this.selectedImage = null,
+        this.selectedImages = [],
         this.selectedType = "",
         this.getImages()
-        // this.images.push(response.data); // Assuming the response contains the uploaded image data
-        // this.selectedImage = null; // Reset the file input
       } catch (err) {
-        console.error('Failed to upload image:', err);
-        this.snackbarText = 'Failed to upload image. Please try again.';
+        console.error('Failed to upload image(s):', err);
+        this.snackbarText = 'Failed to upload image(s). Please try again.';
         this.snackbar = true;
       }
     },

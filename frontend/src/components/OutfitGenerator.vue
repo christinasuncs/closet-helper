@@ -263,10 +263,8 @@ export default {
 }
 </script>
 
-<!-- <style scoped>
-.v-img {
-  border: 1px solid #ccc;
-  border-radius: 8px;
+<style scoped>
+.v-container {
+  width: 65%;
 }
-
-</style> -->
+</style>

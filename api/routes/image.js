@@ -23,7 +23,6 @@ const upload = multer({ storage });
 // fetch all images
 router.get("/", async(req, res) => {
   try {
-    console.log(storage)
     const images = await Image.find({})
     res.json(images)
   } catch (err) {
@@ -32,24 +31,29 @@ router.get("/", async(req, res) => {
 })
 
 // POST upload image
-router.post("/upload", upload.single('image'), async (req, res) => {
+router.post("/upload", upload.array('images'), async (req, res) => {
   try {
-    const imageUrl = req.file.path; // URL of the uploaded image in Cloudinary
+    // const imageUrl = req.file.path; // URL of the uploaded image in Cloudinary
     const { type } = req.body;
 
-    const newImage = new Image({
-      url: imageUrl,
-      public_id: req.file.filename, // Store the public ID for future reference (e.g., for deletion)
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: "No files uploaded" });
+    }
+
+    const images = req.files.map(file => ({
+      url: file.path,
+      public_id: file.filename, // Store the public ID for future reference (e.g., for deletion)
       type: type,
-    });
+    }));
 
-    await newImage.save();
+    const savedImages = await Image.insertMany(images); // Save the images to the database
 
-    res.status(201).json({ message: "Image uploaded successfully", image: newImage});
+    res.status(201).json({ message: "Image(s) uploaded successfully", image: savedImages});
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Image upload failed" });
+    res.status(500).json({ error: "Image(s) upload failed" });
   }
 });
+
 module.exports = router;

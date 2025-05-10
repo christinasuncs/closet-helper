@@ -320,7 +320,6 @@ export default {
   watch: {
     // watch tags filter
     'filterTags': function(newValue, oldValue) {
-      console.log(this.filterTags)
       if (newValue == ''){
         this.filteredOutfits = this.outfits
       } else {
@@ -340,7 +339,6 @@ export default {
       return true
     },
     applyFilter(){
-      console.log(this.outfits)
       this.filteredOutfits = this.outfits.filter(outfit => {
         const outfitTags = outfit.tags.map(tag => tag.name) // gives array of tag names for each outfit
         // make sure filterTags in outfitTags
@@ -383,7 +381,6 @@ export default {
       try {
         const tags = await axios.get(`https://closet-backend-huo7.onrender.com/api/tags`)
         this.tags = tags.data
-        console.log(this.tags)
       } catch (err) {
         console.error('Failed to load tags:', err);
       }

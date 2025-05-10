@@ -34,7 +34,6 @@ router.post("/new", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(id)
     const outfit = await Outfit.findById(id);
     res.json(outfit);
 } catch (err) {
