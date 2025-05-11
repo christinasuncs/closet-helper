@@ -161,6 +161,20 @@ export default {
         this.snackbar = true;
       }
     },
+    async archiveImage(imageId) {
+      try {
+        this.editedImage = this.images.find(image => image._id === imageId);
+        this.editedImage.archived = !this.editedImage.archived;
+        await axios.put(`http://localhost:5000/api/images/archive/${imageId}`, this.editedImage);
+        this.snackbarText = 'Image archived successfully!',
+        this.snackbar = true,
+        this.getImages()
+      } catch (err) {
+        console.error('Failed to archive image:', err);
+        this.snackbarText = 'Failed to archive image. Please try again.';
+        this.snackbar = true;
+      }
+    },
   },
 }
 </script>

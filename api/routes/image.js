@@ -56,4 +56,18 @@ router.post("/upload", upload.array('images'), async (req, res) => {
   }
 });
 
+router.put("/archive/:id", async(req, res) => {
+  try {
+    const id = req.params.id;
+    const updatedImage = await Image.findByIdAndUpdate(id, req.body, { new: true });
+    if (!updatedImage) {
+      return res.status(404).json({ message: "Image not found" });
+    }
+    res.json(updatedImage);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update image" });
+  }
+})
+
 module.exports = router;
