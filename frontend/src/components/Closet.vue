@@ -14,7 +14,7 @@
         class="ml-2" 
         :disabled="selectedImageIds.length == 0"
         @click="archiveSelectedImages()">
-        Archieve Selected 
+        Archive Selected 
       </v-btn>
     </div>
     <!-- file input -->
@@ -67,6 +67,44 @@
     <v-snackbar v-model="snackbar" timeout="3000" color="success">
       {{ snackbarText }}
     </v-snackbar>
+    <v-btn
+      color="primary"
+      fab
+      @click="archiveDialog = true"
+      class="archive-button"
+    ><v-icon>mdi-archive</v-icon></v-btn>
+    <v-dialog v-model="archiveDialog" max-width="900px">
+      <v-card style="display: flex; flex-direction: column;" max-height="80vh">
+        <v-card-title> Archived Images </v-card-title>
+        <v-card-text
+          style="overflow-y: auto; flex:1 1 auto;">
+          
+        <v-row>
+          <v-col 
+            v-for="(image, index) in archivedImages" 
+            :key="index" 
+            cols="12" 
+            md="4" 
+            sm="6" 
+            lg="3"
+            @click="toggleSelectImage(image._id)"
+          >
+            <v-card class="image-card" :class="{'selected-image': selectedImageIds.includes(image._id)}">
+              <v-img :src="image.url" aspect-ratio="1" class="white--text align-end"></v-img>
+            </v-card>
+          </v-col>
+        </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            text="Close Dialog"
+            @click="archiveDialog = false"
+          ></v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 <script>
@@ -97,10 +135,17 @@ export default {
         { name: 'accessory' },
       ],
       selectedImageIds: [],
+      archiveDialog: false,
+      archivedImages: [],
     };
   },
   mounted() {
     this.getImages();
+  },
+  computed: {
+    archivedImages() {
+      return this.images.filter(image => image.archived);
+    },
   },
   watch: {
     // watch types filter
@@ -235,4 +280,10 @@ export default {
   box-shadow: 0 0 10px #1976d2;
 }
 
+.archive-button {
+  position: fixed;
+  bottom: 30px;
+  right: 50px;
+  z-index: 1000;
+}
 </style>
