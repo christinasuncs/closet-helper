@@ -87,20 +87,26 @@
             md="4" 
             sm="6" 
             lg="3"
-            @click="toggleSelectImage(image._id)"
+            @click="toggleArchiveImage(image._id)"
           >
-            <v-card class="image-card" :class="{'selected-image': selectedImageIds.includes(image._id)}">
+            <v-card class="image-card" :class="{'selected-image': unarchiveImageIds.includes(image._id)}">
               <v-img :src="image.url" aspect-ratio="1" class="white--text align-end"></v-img>
             </v-card>
           </v-col>
         </v-row>
         </v-card-text>
         <v-card-actions>
+          <v-btn 
+            color="error"  
+            class="mr-2"
+            :disabled="unarchiveImageIds.length == 0"
+            @click="unarchiveSelectedImages()">
+            Unarchive Selected 
+          </v-btn>
           <v-spacer></v-spacer>
-
           <v-btn
             text="Close Dialog"
-            @click="archiveDialog = false"
+            @click="archiveDialog = false; unarchiveImageIds = []"
           ></v-btn>
         </v-card-actions>
       </v-card>
@@ -135,6 +141,7 @@ export default {
         { name: 'accessory' },
       ],
       selectedImageIds: [],
+      unarchiveImageIds: [],
       archiveDialog: false,
       archivedImages: [],
     };
@@ -155,7 +162,14 @@ export default {
       } else {
         this.applyFilter()
       }
-    }
+    },
+    archiveDialog: function(newValue) {
+      if (newValue) {
+        this.archivedImages = this.images.filter(image => image.archived);
+      } else {
+        this.unarchiveImageIds = [];
+      }
+    },
   },
   methods: {
     async getImages() {
@@ -242,7 +256,6 @@ export default {
       }
     },
     toggleSelectImage(imageId) {
-      console.log(this.selectedImageIds)
       const index = this.selectedImageIds.indexOf(imageId);
       if (index == -1) {
         this.selectedImageIds.push(imageId);
@@ -262,6 +275,29 @@ export default {
       } catch (err) {
         console.error('Failed to archive selected images:', err);
         this.snackbarText = 'Failed to archive selected images. Please try again.';
+        this.snackbar = true;
+      }
+    },
+    toggleArchiveImage(imageId) {
+      const index = this.unarchiveImageIds.indexOf(imageId);
+      if (index == -1) {
+        this.unarchiveImageIds.push(imageId);
+      } else {
+        this.unarchiveImageIds.splice(index, 1);
+      }
+    },
+    async unarchiveSelectedImages(){
+      try {
+        await Promise.all(this.unarchiveImageIds.map(id => {
+          axios.put(`http://localhost:5000/api/images/archive/${id}`, { archived: false });
+        }));
+        this.snackbarText = 'Selected images unarchived successfully!',
+        this.snackbar = true,
+        this.unarchiveImageIds = [];
+        this.getImages();
+      } catch (err) {
+        console.error('Failed to unarchive selected images:', err);
+        this.snackbarText = 'Failed to unarchive selected images. Please try again.';
         this.snackbar = true;
       }
     }
