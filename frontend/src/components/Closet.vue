@@ -177,19 +177,6 @@ export default {
         const images = await axios.get(`https://closet-backend-huo7.onrender.com/api/images`); // change link to whatever it is
         this.images = images.data
         this.applyFilter()
-        // images.data.forEach(image => {
-        //   if(image.type == "top") {
-        //     this.tops.push(image)
-        //   } else if (image.type == "bottom") {
-        //     this.bottoms.push(image)
-        //   } else if (image.type == "shoes") {
-        //     this.shoes.push(image)
-        //   } else if (image.type == "hat") {
-        //     this.hats.push(image)
-        //   } else if (image.type == "accessory") {
-        //     this.accessories.push(image)
-        //   }
-        // });
       } catch (err) {
         console.error('Failed to load images:', err);
       }
