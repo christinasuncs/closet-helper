@@ -21,6 +21,10 @@ const imageSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    account_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Account',
+    },
 });
 
 module.exports = mongoose.model('Image', imageSchema);

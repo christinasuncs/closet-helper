@@ -11,12 +11,21 @@
             <v-tab to="/">Home</v-tab>       
             <v-tab to="/outfits">Outfits</v-tab>     
             <v-tab to="/closet">Closet</v-tab>     
-            <v-tab to="/login">Log In</v-tab>     
+            <v-tab v-if="!loggedIn" to="/login">Log In</v-tab>     
+            <v-tab v-else @click.prevent="logout">Log Out</v-tab>     
         </v-tabs>   
     </v-app-bar> 
 </template> 
 <script>
+import axios from 'axios';
 export default {
+  props: {
+    loggedIn: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  emits: ['logout'],
   data() {
     return {
       activeTab: this.$route.path,
@@ -27,7 +36,13 @@ export default {
       this.activeTab = to.path;
     },
   },
-};
+  methods: {
+    logout() {
+      this.$emit('logout');
+      this.$router.push('/login');
+    }
+  }
+}
 </script>
 
 <style scoped>

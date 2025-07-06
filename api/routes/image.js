@@ -30,11 +30,26 @@ router.get("/", async(req, res) => {
   }
 })
 
+router.get("/:id", async(req, res) => {
+  try {
+    const id = req.params.id;
+    const image = await Image.find({account_id: id});
+    if (!image) {
+      return res.status(200).json({ message: "No images in account" });
+    }
+    res.json(image);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch image" });
+  }
+});
+
 // POST upload image
 router.post("/upload", upload.array('images'), async (req, res) => {
   try {
     // const imageUrl = req.file.path; // URL of the uploaded image in Cloudinary
-    const { type } = req.body;
+    const { type, account_id } = req.body;
+    console.log(req.body);
 
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: "No files uploaded" });
@@ -44,7 +59,9 @@ router.post("/upload", upload.array('images'), async (req, res) => {
       url: file.path,
       public_id: file.filename, // Store the public ID for future reference (e.g., for deletion)
       type: type,
+      account_id: account_id,
     }));
+    console.log(images);
 
     const savedImages = await Image.insertMany(images); // Save the images to the database
 

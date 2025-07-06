@@ -209,6 +209,7 @@ export default {
         formData.append('images', image); // Append each selected image to the FormData object
       });
       formData.append('type', this.selectedType);
+      formData.append('account_id', '685466a5eeb08e0151f1ed2d'); 
       try {
         const response = await axios.post('http://localhost:5000/api/images/upload', formData, {
           headers: {

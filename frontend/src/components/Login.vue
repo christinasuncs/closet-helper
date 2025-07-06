@@ -16,8 +16,6 @@
             type="text"
             v-model="password"
             ></v-text-field>
-      </v-col>
-      <v-col cols="12" md="2" class="d-flex align-center">
         <v-btn
           color="primary"
           @click="login()"
@@ -39,25 +37,23 @@
           style="overflow-y: auto; flex:1 1 auto;">
           
         <v-row>
-          <v-col cols="12" md="6">
         <text-body-1>Username</text-body-1>
         <v-text-field
             label="Username"
             type="username"
             ></v-text-field>
+        </v-row>
+        <v-row>
         <text-body-1>Password</text-body-1>
         <v-text-field
             label="Password"
             type="password"
             ></v-text-field>
-      </v-col>
-      <v-col cols="12" md="2" class="d-flex align-center">
         <v-btn
           color="primary"
           @click="createAccount()"
           block
         >Create Account</v-btn>
-      </v-col>
         </v-row>
         </v-card-text>
         <v-card-actions>
@@ -70,16 +66,23 @@
       </v-card>
     </v-dialog>
   </v-container>
+  <v-snackbar v-model="snackbar" timeout="3000" :color="snackbarColor">
+    {{ snackbarText }}
+  </v-snackbar>
 </template>
 <script>
 import axios from 'axios';
 export default {
   name: 'Login View',
+  emits: ['login-success'],
   data() {
     return {
         createAccountDialog: false,
         username: '',
         password: '',
+      snackbar: false,
+      snackbarText: '',
+      snackbarColor: 'success',
     }
   },
   mounted() {
@@ -97,9 +100,19 @@ export default {
         });
         console.log('Login successful:', response.data);
         // Handle successful login (e.g., redirect, store token)
+        this.snackbarText = 'Login successful!',
+        this.snackbarColor = 'success';
+        this.snackbar = true  
+        this.$emit('login-success');
+        setTimeout(() => {
+          this.$router.push('/'); // Redirect to closet after login
+        }, 1000); // Delay to show snackbar message  
       } catch (error) {
         console.error('Login failed:', error);
         // Handle login failure (e.g., show error message)
+        this.snackbarText = 'Login failed; please try again.';
+        this.snackbarColor = 'error';
+        this.snackbar = true;      
       }
     },
   }
