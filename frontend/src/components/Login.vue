@@ -97,7 +97,8 @@ export default {
         const response = await axios.post('http://localhost:5000/api/accounts/login', {
           username: this.username,
           password: this.password
-        });
+        },
+        { withCredentials: true }); // Include credentials for session management
         console.log('Login successful:', response.data);
         // Handle successful login (e.g., redirect, store token)
         this.snackbarText = 'Login successful!',

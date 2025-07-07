@@ -27,13 +27,18 @@
     mounted() {
       this.checkSession();
     },
+    watch: {
+      $route() {
+        this.checkSession();
+      }
+    },
     methods: {
       handleLoginSuccess() {
         this.loggedIn = true;
       },
       async handleLogout() {
         try {
-          const response = await axios.post('http://localhost:5000/api/accounts/logout', {});
+          const response = await axios.post('http://localhost:5000/api/accounts/logout', {}, { withCredentials: true });
           console.log('Logout successful:', response.data);
           // this.$router.push('/login');
         } catch (error) {
@@ -44,9 +49,11 @@
       async checkSession() {
         // Check if user is logged in
         try {
-          const response = await axios.post('http://localhost:5000/api/accounts/session', {});
+          const response = await axios.get('http://localhost:5000/api/accounts/session', {withCredentials: true});
           console.log('Session data:', response.data);
+          this.loggedIn = response.data.loggedIn;
         } catch (error) {
+          this.loggedIn = false;
           console.error('Session error:', error);
         }
       }
