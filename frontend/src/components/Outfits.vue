@@ -309,13 +309,13 @@ export default {
       newTag: '',
       filterTags: [],
 
-      activeSlide: 0
+      activeSlide: 0,
+      user: null,
+      loggedIn: false,
     }
   }, 
   mounted() {
-    this.loadOutfits()
-    this.loadImages()
-    this.loadTags()
+    this.checkSession();
   },
   watch: {
     // watch tags filter
@@ -328,6 +328,24 @@ export default {
     }
   },
   methods: {
+    async checkSession() {
+      try {
+        const res = await axios.get('http://localhost:5000/api/accounts/session', { withCredentials: true });
+        if (res.data.loggedIn) {
+          this.loggedIn = true;
+          this.user = res.data.user;
+        } else {
+          this.loggedIn = false;
+          this.user = null;
+        }
+      } catch (err) {
+        this.loggedIn = false;
+        this.user = null;
+      }
+      this.loadOutfits()
+      this.loadImages()
+      this.loadTags()
+    },
     filterCheck(array1, array2) {
       // check if filterTags[] is part of outfitTags[]
       // make sure everything in arr1 is in arr2
@@ -350,7 +368,12 @@ export default {
     },
     async loadImages() {
       try {
-        const images = await axios.get(`https://closet-backend-huo7.onrender.com/api/images`); // change link to whatever it is
+        let images = []
+        if (this.loggedIn) {
+          images = await axios.get(`http://localhost:5000/api/images/${this.user.id}`); // change link to whatever it is
+        } else {
+          images = await axios.get(`http://localhost:5000/api/images`);
+        }
         images.data.forEach(image => {
           if(image.type == "top") {
             this.tops.push(image)
@@ -370,7 +393,12 @@ export default {
     },
     async loadOutfits() {
       try {
-        const outfits = await axios.get(`https://closet-backend-huo7.onrender.com/api/outfit`)
+        var outfits = []
+        if (this.loggedIn) {
+          outfits = await axios.get(`http://localhost:5000/api/outfit/${this.user.id}`); // change link to whatever it is
+        } else {
+          outfits = await axios.get(`http://localhost:5000/api/outfit`);
+        }
         this.outfits = outfits.data
         this.filteredOutfits = outfits.data
       } catch (err) {
@@ -379,7 +407,12 @@ export default {
     },
     async loadTags() {
       try {
-        const tags = await axios.get(`https://closet-backend-huo7.onrender.com/api/tags`)
+        let tags = []
+        if (this.loggedIn) {
+          tags = await axios.get(`http://localhost:5000/api/tags/${this.user.id}`); // change link to whatever it is
+        } else {
+          tags = await axios.get(`http://localhost:5000/api/tags`);
+        }
         this.tags = tags.data
       } catch (err) {
         console.error('Failed to load tags:', err);

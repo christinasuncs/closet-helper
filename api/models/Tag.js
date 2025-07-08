@@ -8,6 +8,7 @@ const tagSchema = new mongoose.Schema({
     account_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Account',
+        default: null
     },
 });
 

@@ -20,23 +20,24 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage });
 
-// fetch all images
+// fetch all images with null account_id
 router.get("/", async(req, res) => {
   try {
-    const images = await Image.find({})
+    const images = await Image.find({account_id: null})
     res.json(images)
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch images"})
   }
 })
 
+// fetch images by account_id, always use if user is logged in
 router.get("/:id", async(req, res) => {
   try {
     const id = req.params.id;
     const image = await Image.find({account_id: id});
-    if (!image) {
-      return res.status(200).json({ message: "No images in account" });
-    }
+    // if (!image) {
+    //   return res.status(200).json({ message: "No images in account" });
+    // }
     res.json(image);
   } catch (err) {
     console.error(err);

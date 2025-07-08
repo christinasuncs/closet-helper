@@ -144,10 +144,12 @@ export default {
       unarchiveImageIds: [],
       archiveDialog: false,
       archivedImages: [],
+      user: null,
+      loggedIn: false,
     };
   },
   mounted() {
-    this.getImages();
+    this.checkSession();
   },
   computed: {
     archivedImages() {
@@ -172,11 +174,36 @@ export default {
     },
   },
   methods: {
+    async checkSession() {
+      try {
+        const res = await axios.get('http://localhost:5000/api/accounts/session', { withCredentials: true });
+        if (res.data.loggedIn) {
+          this.loggedIn = true;
+          this.user = res.data.user;
+        } else {
+          this.loggedIn = false;
+          this.user = null;
+        }
+      } catch (err) {
+        this.loggedIn = false;
+        this.user = null;
+      }
+      this.getImages();
+    },
     async getImages() {
       try {
-        const images = await axios.get(`https://closet-backend-huo7.onrender.com/api/images`); // change link to whatever it is
-        this.images = images.data
-        this.applyFilter()
+        let images = [];
+        if (this.loggedIn && this.user && this.user.id) {
+          // Fetch images for this account
+          const res = await axios.get(`http://localhost:5000/api/images/${this.user.id}`);
+          images = res.data;
+        } else {
+          // Fetch all public images
+          const res = await axios.get('http://localhost:5000/api/images');
+          images = res.data;
+        }
+        this.images = images;
+        this.applyFilter();
       } catch (err) {
         console.error('Failed to load images:', err);
       }

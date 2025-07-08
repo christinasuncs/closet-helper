@@ -84,6 +84,7 @@
 
 <script>
 import axios from 'axios'
+import image from '../assets/placeholder.jpg'
 export default {
   name: "OutfitGeneratorView",
   data() {
@@ -111,17 +112,40 @@ export default {
       add_tags_dialog: false,
       new_tag_dialog: false,
       tags: [],
-      selectedTags: []
+      selectedTags: [],
+      user: null,
+      loggedIn: false,
     }
   },
   mounted() {
-    this.loadImages()
-    this.loadTags()
+    this.checkSession();
   },
   methods: {
+    async checkSession() {
+      try {
+        const res = await axios.get('http://localhost:5000/api/accounts/session', { withCredentials: true });
+        if (res.data.loggedIn) {
+          this.loggedIn = true;
+          this.user = res.data.user;
+        } else {
+          this.loggedIn = false;
+          this.user = null;
+        }
+      } catch (err) {
+        this.loggedIn = false;
+        this.user = null;
+      }
+      this.loadImages();
+      this.loadTags();
+    },
     async loadImages() {
       try {
-        const images = await axios.get(`https://closet-backend-huo7.onrender.com/api/images/`); // change link to whatever it is
+        let images = []
+        if (this.loggedIn) {
+          images = await axios.get(`http://localhost:5000/api/images/${this.user.id}`); // change link to whatever it is
+        } else {
+          images = await axios.get(`http://localhost:5000/api/images`);
+        }
         images.data.forEach(image => {
           if(image.type == "top") {
             this.tops.push(image)
@@ -142,7 +166,12 @@ export default {
     },    
     async loadTags() {
       try {
-        const tags = await axios.get(`https://closet-backend-huo7.onrender.com/api/tags`)
+        let tags = []
+        if (this.loggedIn) {
+          tags = await axios.get(`http://localhost:5000/api/tags/${this.user.id}`); // change link to whatever it is
+        } else {
+          tags = await axios.get(`http://localhost:5000/api/tags`);
+        }
         this.tags = tags.data
       } catch (err) {
         console.error('Failed to load tags:', err);
@@ -179,6 +208,13 @@ export default {
     },
     getRandomItem(items) {
       const arrLength = items.length
+      if (arrLength == 0) {
+        return {
+          url: image,
+          type: 'placeholder',
+          _id: 'placeholder'
+        }
+      }
       const randomIndex = Math.floor(Math.random() * arrLength)
       return items[randomIndex]
     },

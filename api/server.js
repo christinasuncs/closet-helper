@@ -32,7 +32,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-app.use("/api/outfit", outfit_routes);
+app.use("/api/outfits", outfit_routes);
 app.use('/api/images', image_routes)
 app.use('/api/tags', tag_routes)
 app.use('/api/accounts', account_routes);
