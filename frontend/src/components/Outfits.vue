@@ -19,21 +19,21 @@
         <!-- Fit section -->
         <v-col cols="8">
           <v-row>
-            <v-img :src="outfits[index].hat.url" class="fit-img"></v-img>
+            <v-img v-if="outfits[index].hat && outfits[index].hat.url" :src="outfits[index].hat.url" class="fit-img"></v-img>
           </v-row>
           <v-row>
-            <v-img :src="outfits[index].top.url" class="fit-img"></v-img>
+            <v-img v-if="outfits[index].top && outfits[index].top.url" :src="outfits[index].top.url" class="fit-img"></v-img>
           </v-row>
           <v-row>
-            <v-img :src="outfits[index].bottom.url" class="fit-img"></v-img>
+            <v-img v-if="outfits[index].bottom && outfits[index].bottom.url" :src="outfits[index].bottom.url" class="fit-img"></v-img>
           </v-row>
           <v-row>
-            <v-img :src="outfits[index].shoes.url" class="fit-img"></v-img>
+            <v-img v-if="outfits[index].shoes && outfits[index].shoes.url" :src="outfits[index].shoes.url" class="fit-img"></v-img>
           </v-row>
         </v-col>
         <!-- Accessory section -->
         <v-col cols="4">
-          <v-img :src="outfits[index].accessory.url" class="accessory-img"></v-img>
+          <v-img v-if="outfits[index].accessory && outfits[index].accessory.url" :src="outfits[index].accessory.url" class="accessory-img"></v-img>
         </v-col>
       </v-row>
     </v-carousel-item>
@@ -65,19 +65,19 @@
           <v-card-text>
             <v-row>
               <v-col cols="6">
-                <v-img :src="outfit.hat.url" contain height="100px"></v-img>
+                <v-img v-if="outfit.hat && outfit.hat.url" :src="outfit.hat.url" contain height="100px"></v-img>
               </v-col>
               <v-col cols="6">
-                <v-img :src="outfit.top.url" contain height="100px"></v-img>
+                <v-img v-if="outfit.top && outfit.top.url" :src="outfit.top.url" contain height="100px"></v-img>
               </v-col>
               <v-col cols="6">
-                <v-img :src="outfit.bottom.url" contain height="100px"></v-img>
+                <v-img v-if="outfit.bottom && outfit.bottom.url" :src="outfit.bottom.url" contain height="100px"></v-img>
               </v-col>
               <v-col cols="6">
-                <v-img :src="outfit.shoes.url" contain height="100px"></v-img>
+                <v-img v-if="outfit.shoes && outfit.shoes.url" :src="outfit.shoes.url" contain height="100px"></v-img>
               </v-col>
               <v-col cols="12">
-                <v-img :src="outfit.accessory.url" contain height="100px"></v-img>
+                <v-img v-if="outfit.accessory && outfit.accessory.url" :src="outfit.accessory.url" contain height="100px"></v-img>
               </v-col>
             </v-row>
           </v-card-text>
@@ -395,9 +395,9 @@ export default {
       try {
         var outfits = []
         if (this.loggedIn) {
-          outfits = await axios.get(`http://localhost:5000/api/outfit/${this.user.id}`); // change link to whatever it is
+          outfits = await axios.get(`http://localhost:5000/api/outfits/account/${this.user.id}`); // change link to whatever it is
         } else {
-          outfits = await axios.get(`http://localhost:5000/api/outfit`);
+          outfits = await axios.get(`http://localhost:5000/api/outfits`);
         }
         this.outfits = outfits.data
         this.filteredOutfits = outfits.data
@@ -420,7 +420,7 @@ export default {
     },
     async deleteOutfit(id){
       try {
-        await axios.delete(`https://closet-backend-huo7.onrender.com/api/outfit/delete/${id}`)
+        await axios.delete(`http://localhost:5000/api/outfits/delete/${id}`)
         this.loadOutfits()
         this.deleteAlert = true
       } catch (err) {
@@ -446,17 +446,29 @@ export default {
           tagNameToIdMap[tag.name] = tag;
         })
 
-        this.editedOutfit = {
-          _id: this.editedOutfit._id,
-          hat: this.editedOutfit.hat._id,
-          top: this.editedOutfit.top._id,
-          bottom: this.editedOutfit.bottom._id,
-          shoes: this.editedOutfit.shoes._id,
-          accessory: this.editedOutfit.accessory._id,
-          tags: this.editedOutfit.tags.map(tag => tagNameToIdMap[tag]._id)
+        this.editedOutfit._id = this.editedOutfit._id
+        this.editedOutfit.tags = this.editedOutfit.tags.map(tag => tagNameToIdMap[tag]._id)
+        this.editedOutfit.account_id = this.user.id
+
+        if (this.editedOutfit.hat) {
+          this.editedOutfit.hat = this.editedOutfit.hat._id
         }
+        if (this.editedOutfit.top) {
+          this.editedOutfit.top = this.editedOutfit.top._id
+        }
+        if (this.editedOutfit.bottom) {
+          this.editedOutfit.bottom = this.editedOutfit.bottom._id
+        }
+        if (this.editedOutfit.shoes) {
+          this.editedOutfit.shoes = this.editedOutfit.shoes._id
+        }
+        if (this.editedOutfit.accessory) {
+          this.editedOutfit.accessory = this.editedOutfit.accessory._id
+        }
+
+        console.log(this.editedOutfit)
         
-        await axios.put(`https://closet-backend-huo7.onrender.com/api/outfit/edit/${this.editedOutfit._id}`, this.editedOutfit)
+        await axios.put(`http://localhost:5000/api/outfits/edit/${this.editedOutfit._id}`, this.editedOutfit)
         this.loadOutfits()
         this.edit_outfit_dialog = false
       } catch (err) {

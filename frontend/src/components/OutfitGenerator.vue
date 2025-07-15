@@ -266,9 +266,27 @@ export default {
           bottom: this.outfit[2]._id,
           shoes: this.outfit[3]._id,
           accessory: this.outfit[4]._id,
-          tags: this.selectedTags.map(tag => tagNameToIdMap[tag]._id)
+          tags: this.selectedTags.map(tag => tagNameToIdMap[tag]._id),
+          account_id: this.user.id
         }
-        await axios.post('https://closet-backend-huo7.onrender.com/api/outfit/new', outfitIds)
+
+        if (outfitIds.hat == "placeholder") {
+          delete outfitIds.hat
+        }
+        if (outfitIds.top == "placeholder") {
+          delete outfitIds.top
+        }
+        if (outfitIds.bottom == "placeholder") {
+          delete outfitIds.bottom
+        }
+        if (outfitIds.shoes == "placeholder") {
+          delete outfitIds.shoes
+        }
+        if (outfitIds.accessory == "placeholder") {
+          delete outfitIds.accessory
+        }
+
+        await axios.post('http://localhost:5000/api/outfits/new', outfitIds)
 
         this.add_tags_dialog = false
         this.selectedTags = []
@@ -287,8 +305,9 @@ export default {
     },
     async saveNewTag() {
       try {
-        const newTag = {name: this.newTag}
-        await axios.post(`https://closet-backend-huo7.onrender.com/api/tags/new`, newTag)
+        const newTag = {name: this.newTag, account_id: this.user.id}
+        console.log("New Tag: ", newTag)
+        await axios.post(`http://localhost:5000/api/tags/new`, newTag)
         this.loadTags()
         this.new_tag_dialog = false
       } catch (err) {

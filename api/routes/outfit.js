@@ -39,11 +39,11 @@ router.get("/account/:id", async(req, res) => {
 // make/save a new outfit
 router.post("/new", async (req, res) => {
   try {
-      const outfit = new Outfit(req.body); // pass in body to model
-      await outfit.save(); // save it
-      res.json(outfit); // output new saved outfit
+    const outfit = new Outfit(req.body); // pass in body to model
+    await outfit.save(); // save it
+    res.json(outfit); // output new saved outfit
   } catch (err) {
-      res.status(500).json
+    res.status(500).json
   }
 })
 
