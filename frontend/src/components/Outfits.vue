@@ -20,20 +20,25 @@
         <v-col cols="8">
           <v-row>
             <v-img v-if="outfits[index].hat && outfits[index].hat.url" :src="outfits[index].hat.url" class="fit-img"></v-img>
+            <div v-else style="height: 100px;"></div>
           </v-row>
           <v-row>
             <v-img v-if="outfits[index].top && outfits[index].top.url" :src="outfits[index].top.url" class="fit-img"></v-img>
+            <div v-else style="height: 100px;"></div>
           </v-row>
           <v-row>
             <v-img v-if="outfits[index].bottom && outfits[index].bottom.url" :src="outfits[index].bottom.url" class="fit-img"></v-img>
+            <div v-else style="height: 100px;"></div>
           </v-row>
           <v-row>
             <v-img v-if="outfits[index].shoes && outfits[index].shoes.url" :src="outfits[index].shoes.url" class="fit-img"></v-img>
+            <div v-else style="height: 100px;"></div>
           </v-row>
         </v-col>
         <!-- Accessory section -->
         <v-col cols="4">
           <v-img v-if="outfits[index].accessory && outfits[index].accessory.url" :src="outfits[index].accessory.url" class="accessory-img"></v-img>
+          <div v-else style="height: 100px;"></div>
         </v-col>
       </v-row>
     </v-carousel-item>
@@ -448,7 +453,7 @@ export default {
 
         this.editedOutfit._id = this.editedOutfit._id
         this.editedOutfit.tags = this.editedOutfit.tags.map(tag => tagNameToIdMap[tag]._id)
-        this.editedOutfit.account_id = this.user.id
+        this.editedOutfit.account_id = this.user && this.user.id ? this.user.id : null
 
         if (this.editedOutfit.hat) {
           this.editedOutfit.hat = this.editedOutfit.hat._id
@@ -477,7 +482,7 @@ export default {
     },
     async saveNewTag() {
       try {
-        const newTag = {name: this.newTag}
+        const newTag = {name: this.newTag, account_id: this.user && this.user.id ? this.user.id : null}
         await axios.post(`https://closet-backend-huo7.onrender.com/api/tags/new`, newTag)
         this.loadTags()
         this.new_tag_dialog = false

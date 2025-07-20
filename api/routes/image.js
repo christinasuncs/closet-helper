@@ -50,7 +50,6 @@ router.post("/upload", upload.array('images'), async (req, res) => {
   try {
     // const imageUrl = req.file.path; // URL of the uploaded image in Cloudinary
     const { type, account_id } = req.body;
-    console.log(req.body);
 
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: "No files uploaded" });
@@ -60,9 +59,8 @@ router.post("/upload", upload.array('images'), async (req, res) => {
       url: file.path,
       public_id: file.filename, // Store the public ID for future reference (e.g., for deletion)
       type: type,
-      account_id: account_id,
+      account_id: account_id != "" ? account_id : null, // Use null if no account_id is provided
     }));
-    console.log(images);
 
     const savedImages = await Image.insertMany(images); // Save the images to the database
 

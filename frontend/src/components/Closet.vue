@@ -236,7 +236,7 @@ export default {
         formData.append('images', image); // Append each selected image to the FormData object
       });
       formData.append('type', this.selectedType);
-      formData.append('account_id', '685466a5eeb08e0151f1ed2d'); 
+      formData.append('account_id', this.user && this.user.id ? this.user.id : ""); 
       try {
         const response = await axios.post('http://localhost:5000/api/images/upload', formData, {
           headers: {
@@ -281,7 +281,7 @@ export default {
     async archiveSelectedImages(){
       try {
         await Promise.all(this.selectedImageIds.map(id => {
-          axios.put(`http://localhost:5000/api/images/archive/${id}`, { archived: true });
+          return axios.put(`http://localhost:5000/api/images/archive/${id}`, { archived: true });
         }));
         this.snackbarText = 'Selected images archived successfully!',
         this.snackbar = true,
@@ -304,7 +304,7 @@ export default {
     async unarchiveSelectedImages(){
       try {
         await Promise.all(this.unarchiveImageIds.map(id => {
-          axios.put(`http://localhost:5000/api/images/archive/${id}`, { archived: false });
+          return axios.put(`http://localhost:5000/api/images/archive/${id}`, { archived: false });
         }));
         this.snackbarText = 'Selected images unarchived successfully!',
         this.snackbar = true,

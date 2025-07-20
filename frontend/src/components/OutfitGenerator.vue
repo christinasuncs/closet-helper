@@ -79,6 +79,33 @@
         <v-btn @click="saveNewTag()">Save</v-btn>
       </v-card>
     </v-dialog>
+    <!-- first time user introducting feature modal, has 3 parts each explaining different features, similar to a slideshow -->
+    <v-dialog persistent v-model="firstTimeUser" max-width="600px">
+      <v-card>
+        <v-carousel>
+          <v-carousel-item>
+            <v-card-title>Welcome to the Outfit Generator!</v-card-title>
+            <v-card-text>This is a quick introduction to help you utilize this Outfit Generator Website to its fullest potential!</v-card-text>
+          </v-carousel-item>
+          <v-carousel-item>
+            <v-card-text><b>Home</b> is where you can create new outfit combinations and save them to your <b>Outfits</b></v-card-text>
+            <v-card-text>You can create <b>tags</b> to help you organize your outfits</v-card-text>
+            <v-card-text>Use the <b>lock</b> icons to keep specific items in your outfit while generating new ones</v-card-text>
+          </v-carousel-item>
+          <v-carousel-item>
+            <v-card-title>Outfits</v-card-title>
+            <v-card-text>You can view, filter, and edit your previously saved outfit combinations in <b>Outfits</b></v-card-text>
+          </v-carousel-item>
+          <v-carousel-item>
+            <v-card-title>Closet</v-card-title>
+            <v-card-text>Upload your clothing and catagorize them to include them in your outfit combinations</v-card-text>
+            <v-card-text>Use the <b>filter</b> to find specific items in your closet</v-card-text>
+            <v-card-text>Use the <b>archive</b> to hide items you no longer want to see</v-card-text>
+            <v-btn block @click=firstTimeDone()>Got it!</v-btn>
+          </v-carousel-item>
+        </v-carousel>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -115,6 +142,7 @@ export default {
       selectedTags: [],
       user: null,
       loggedIn: false,
+      firstTimeUser: false, // Show the first time user dialog
     }
   },
   mounted() {
@@ -127,9 +155,12 @@ export default {
         if (res.data.loggedIn) {
           this.loggedIn = true;
           this.user = res.data.user;
+          console.log(res.data);
+          this.firstTimeUser = res.data.firstTimeLogin; // Check if it's the first time user
         } else {
           this.loggedIn = false;
           this.user = null;
+          this.firstTimeUser = true; 
         }
       } catch (err) {
         this.loggedIn = false;
@@ -267,7 +298,7 @@ export default {
           shoes: this.outfit[3]._id,
           accessory: this.outfit[4]._id,
           tags: this.selectedTags.map(tag => tagNameToIdMap[tag]._id),
-          account_id: this.user.id
+          account_id: this.user && this.user.id ? this.user.id : null
         }
 
         if (outfitIds.hat == "placeholder") {
@@ -305,7 +336,7 @@ export default {
     },
     async saveNewTag() {
       try {
-        const newTag = {name: this.newTag, account_id: this.user.id}
+        const newTag = {name: this.newTag, account_id: this.user && this.user.id ? this.user.id : null}
         console.log("New Tag: ", newTag)
         await axios.post(`http://localhost:5000/api/tags/new`, newTag)
         this.loadTags()
@@ -313,7 +344,14 @@ export default {
       } catch (err) {
         console.log("Failed to create new tag: ", err)
       }
-    }
+    },
+    async firstTimeDone() {
+      this.firstTimeUser = false;
+      if (this.user) {
+        this.user.firstTimeLogin = false; // Update the user's first time login status
+        await axios.put(`http://localhost:5000/api/accounts/${this.user.id}`, { firstTimeLogin: false });
+      }
+    },
   },
 }
 </script>

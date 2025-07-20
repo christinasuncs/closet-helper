@@ -15,7 +15,7 @@ router.post("/register", async(req, res) => {
             return res.status(409).json({ message: "Username already exists" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newAccount = new Account({ username, password: hashedPassword });
+        const newAccount = new Account({ username, password: hashedPassword, firstTimeLogin: true});
         await newAccount.save();
         res.status(201).json({ message: "Account created successfully" });
     } catch (err) {
@@ -52,7 +52,13 @@ router.post("/login", async(req, res) => {
 // check session endpoint
 router.get("/session", (req, res) => {
     if (req.session.user) {
-        res.json({ loggedIn: true, user: req.session.user });
+        const account = Account.findById(req.session.user.id);
+        if (!account) {
+            return res.status(404).json({ message: "Account not found" });
+        }
+        console.log(account);
+        console.log(req.session.user);
+        res.json({ loggedIn: true, user: req.session.user, firstTimeLogin: account.firstTimeLogin });
     } else {
         res.json({ loggedIn: false });
     }
@@ -66,6 +72,34 @@ router.post("/logout", (req, res) => {
         }
         res.json({ message: "Logout successful" });
     });
+});
+
+// update account information
+router.put("/:id", async(req, res) => {
+    const { id } = req.params;
+    const { username, password, firstTimeLogin } = req.body;
+
+    try {
+        const account = await Account.findById(id);
+        if (!account) {
+            return res.status(404).json({ message: "Account not found" });
+        }
+
+        if (username) {
+            account.username = username;
+        }
+        if (password) {
+            account.password = await bcrypt.hash(password, 10);
+        }
+        if (firstTimeLogin !== undefined) {
+            account.firstTimeLogin = firstTimeLogin;
+        }
+
+        await account.save();
+        res.json(account);
+    } catch (err) {
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 });
 
 module.exports = router;

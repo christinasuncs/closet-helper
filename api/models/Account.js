@@ -9,6 +9,10 @@ const accountSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    firstTimeLogin: {
+        type: Boolean,
+        default: true
+    },
 });
 
 module.exports = mongoose.model('Account', accountSchema);
