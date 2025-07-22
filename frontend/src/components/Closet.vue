@@ -176,7 +176,7 @@ export default {
   methods: {
     async checkSession() {
       try {
-        const res = await axios.get('http://localhost:5000/api/accounts/session', { withCredentials: true });
+        const res = await axios.get('https://closet-backend-huo7.onrender.com/api/accounts/session', { withCredentials: true });
         if (res.data.loggedIn) {
           this.loggedIn = true;
           this.user = res.data.user;
@@ -195,11 +195,11 @@ export default {
         let images = [];
         if (this.loggedIn && this.user && this.user.id) {
           // Fetch images for this account
-          const res = await axios.get(`http://localhost:5000/api/images/${this.user.id}`);
+          const res = await axios.get(`https://closet-backend-huo7.onrender.com/api/images/${this.user.id}`);
           images = res.data;
         } else {
           // Fetch all public images
-          const res = await axios.get('http://localhost:5000/api/images');
+          const res = await axios.get('https://closet-backend-huo7.onrender.com/api/images');
           images = res.data;
         }
         this.images = images;
@@ -238,7 +238,7 @@ export default {
       formData.append('type', this.selectedType);
       formData.append('account_id', this.user && this.user.id ? this.user.id : ""); 
       try {
-        const response = await axios.post('http://localhost:5000/api/images/upload', formData, {
+        const response = await axios.post('https://closet-backend-huo7.onrender.com/api/images/upload', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -260,7 +260,7 @@ export default {
       try {
         this.editedImage = this.images.find(image => image._id === imageId);
         this.editedImage.archived = !this.editedImage.archived;
-        await axios.put(`http://localhost:5000/api/images/archive/${imageId}`, this.editedImage);
+        await axios.put(`https://closet-backend-huo7.onrender.com/api/images/archive/${imageId}`, this.editedImage);
         this.snackbarText = 'Image archived successfully!',
         this.snackbar = true,
         this.getImages()
@@ -281,7 +281,7 @@ export default {
     async archiveSelectedImages(){
       try {
         await Promise.all(this.selectedImageIds.map(id => {
-          return axios.put(`http://localhost:5000/api/images/archive/${id}`, { archived: true });
+          return axios.put(`https://closet-backend-huo7.onrender.com/api/images/archive/${id}`, { archived: true });
         }));
         this.snackbarText = 'Selected images archived successfully!',
         this.snackbar = true,
@@ -304,7 +304,7 @@ export default {
     async unarchiveSelectedImages(){
       try {
         await Promise.all(this.unarchiveImageIds.map(id => {
-          return axios.put(`http://localhost:5000/api/images/archive/${id}`, { archived: false });
+          return axios.put(`https://closet-backend-huo7.onrender.com/api/images/archive/${id}`, { archived: false });
         }));
         this.snackbarText = 'Selected images unarchived successfully!',
         this.snackbar = true,

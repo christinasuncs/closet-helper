@@ -104,7 +104,7 @@ export default {
     async login() {
       try {
         this.loading = true
-        const response = await axios.post('http://localhost:5000/api/accounts/login', {
+        const response = await axios.post('https://closet-backend-huo7.onrender.com/api/accounts/login', {
           username: this.username,
           password: this.password
         },
@@ -130,7 +130,7 @@ export default {
       try {
         this.loading = true;
         console.log('Creating account with:', this.newuser);
-        const response = await axios.post('http://localhost:5000/api/accounts/register', {
+        const response = await axios.post('https://closet-backend-huo7.onrender.com/api/accounts/register', {
           username: this.newuser.username,
           password: this.newuser.password
         });

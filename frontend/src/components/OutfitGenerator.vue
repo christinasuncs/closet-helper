@@ -160,7 +160,7 @@ export default {
   methods: {
     async checkSession() {
       try {
-        const res = await axios.get('http://localhost:5000/api/accounts/session', { withCredentials: true });
+        const res = await axios.get('https://closet-backend-huo7.onrender.com/api/accounts/session', { withCredentials: true });
         if (res.data.loggedIn) {
           this.loggedIn = true;
           this.user = res.data.user;
@@ -181,9 +181,9 @@ export default {
       try {
         let images = []
         if (this.loggedIn) {
-          images = await axios.get(`http://localhost:5000/api/images/${this.user.id}`); // change link to whatever it is
+          images = await axios.get(`https://closet-backend-huo7.onrender.com/api/images/${this.user.id}`); // change link to whatever it is
         } else {
-          images = await axios.get(`http://localhost:5000/api/images`);
+          images = await axios.get(`https://closet-backend-huo7.onrender.com/api/images`);
         }
         images.data.forEach(image => {
           if (!image.archived) {
@@ -209,9 +209,9 @@ export default {
       try {
         let tags = []
         if (this.loggedIn) {
-          tags = await axios.get(`http://localhost:5000/api/tags/${this.user.id}`); // change link to whatever it is
+          tags = await axios.get(`https://closet-backend-huo7.onrender.com/api/tags/${this.user.id}`); // change link to whatever it is
         } else {
-          tags = await axios.get(`http://localhost:5000/api/tags`);
+          tags = await axios.get(`https://closet-backend-huo7.onrender.com/api/tags`);
         }
         this.tags = tags.data
       } catch (err) {
@@ -327,7 +327,7 @@ export default {
           delete outfitIds.accessory
         }
 
-        await axios.post('http://localhost:5000/api/outfits/new', outfitIds)
+        await axios.post('https://closet-backend-huo7.onrender.com/api/outfits/new', outfitIds)
 
         this.add_tags_dialog = false
         this.selectedTags = []
@@ -347,7 +347,7 @@ export default {
     async saveNewTag() {
       try {
         const newTag = {name: this.newTag, account_id: this.user && this.user.id ? this.user.id : null}
-        await axios.post(`http://localhost:5000/api/tags/new`, newTag)
+        await axios.post(`https://closet-backend-huo7.onrender.com/api/tags/new`, newTag)
         this.loadTags()
         this.new_tag_dialog = false
       } catch (err) {
@@ -358,7 +358,7 @@ export default {
       this.firstTimeUser = false;
       if (this.user) {
         this.user.firstTimeLogin = false; // Update the user's first time login status
-        await axios.put(`http://localhost:5000/api/accounts/${this.user.id}`, { firstTimeLogin: false });
+        await axios.put(`https://closet-backend-huo7.onrender.com/api/accounts/${this.user.id}`, { firstTimeLogin: false });
       }
     },
   },

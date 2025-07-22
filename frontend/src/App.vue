@@ -38,7 +38,7 @@
       },
       async handleLogout() {
         try {
-          const response = await axios.post('http://localhost:5000/api/accounts/logout', {}, { withCredentials: true });
+          const response = await axios.post('https://closet-backend-huo7.onrender.com/api/accounts/logout', {}, { withCredentials: true });
           // this.$router.push('/login');
         } catch (error) {
           console.error('Logout failed:', error);  
@@ -48,7 +48,7 @@
       async checkSession() {
         // Check if user is logged in
         try {
-          const response = await axios.get('http://localhost:5000/api/accounts/session', {withCredentials: true});
+          const response = await axios.get('https://closet-backend-huo7.onrender.com/api/accounts/session', {withCredentials: true});
           this.loggedIn = response.data.loggedIn;
         } catch (error) {
           this.loggedIn = false;

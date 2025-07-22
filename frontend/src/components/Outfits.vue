@@ -335,7 +335,7 @@ export default {
   methods: {
     async checkSession() {
       try {
-        const res = await axios.get('http://localhost:5000/api/accounts/session', { withCredentials: true });
+        const res = await axios.get('https://closet-backend-huo7.onrender.com/api/accounts/session', { withCredentials: true });
         if (res.data.loggedIn) {
           this.loggedIn = true;
           this.user = res.data.user;
@@ -375,9 +375,9 @@ export default {
       try {
         let images = []
         if (this.loggedIn) {
-          images = await axios.get(`http://localhost:5000/api/images/${this.user.id}`); // change link to whatever it is
+          images = await axios.get(`https://closet-backend-huo7.onrender.com/api/images/${this.user.id}`); // change link to whatever it is
         } else {
-          images = await axios.get(`http://localhost:5000/api/images`);
+          images = await axios.get(`https://closet-backend-huo7.onrender.com/api/images`);
         }
         images.data.forEach(image => {
           if(!image.archived) {
@@ -402,9 +402,9 @@ export default {
       try {
         var outfits = []
         if (this.loggedIn) {
-          outfits = await axios.get(`http://localhost:5000/api/outfits/account/${this.user.id}`); // change link to whatever it is
+          outfits = await axios.get(`https://closet-backend-huo7.onrender.com/api/outfits/account/${this.user.id}`); // change link to whatever it is
         } else {
-          outfits = await axios.get(`http://localhost:5000/api/outfits`);
+          outfits = await axios.get(`https://closet-backend-huo7.onrender.com/api/outfits`);
         }
         this.outfits = outfits.data
         this.filteredOutfits = outfits.data
@@ -416,9 +416,9 @@ export default {
       try {
         let tags = []
         if (this.loggedIn) {
-          tags = await axios.get(`http://localhost:5000/api/tags/${this.user.id}`); // change link to whatever it is
+          tags = await axios.get(`https://closet-backend-huo7.onrender.com/api/tags/${this.user.id}`); // change link to whatever it is
         } else {
-          tags = await axios.get(`http://localhost:5000/api/tags`);
+          tags = await axios.get(`https://closet-backend-huo7.onrender.com/api/tags`);
         }
         this.tags = tags.data
       } catch (err) {
@@ -427,7 +427,7 @@ export default {
     },
     async deleteOutfit(id){
       try {
-        await axios.delete(`http://localhost:5000/api/outfits/delete/${id}`)
+        await axios.delete(`https://closet-backend-huo7.onrender.com/api/outfits/delete/${id}`)
         this.loadOutfits()
         this.deleteAlert = true
       } catch (err) {
@@ -474,7 +474,7 @@ export default {
         }
 
         
-        await axios.put(`http://localhost:5000/api/outfits/edit/${this.editedOutfit._id}`, this.editedOutfit)
+        await axios.put(`https://closet-backend-huo7.onrender.com/api/outfits/edit/${this.editedOutfit._id}`, this.editedOutfit)
         this.loadOutfits()
         this.edit_outfit_dialog = false
         this.clearFilters()
