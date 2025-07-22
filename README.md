@@ -15,10 +15,16 @@ The Random Outfit Generator is a web app that lets users create and manage outfi
 - Lock pieces you want to keep for the outfit
 - Assign tags to outfits
 - Save favourite outfits to Closet
-2. Closet
+2. Outfits
 - Carousel to see outfits up close
 - Filterable gallery
 - Able to edit or delete outfits
+3. Closet
+- Display and upload outfit images
+- Filterable outfit types
+- Items can be archived
+4. Account Management
+- Create and Log In to personal accounts for personal outfit generation and organization
 
 # Video Demo
 On its way...
@@ -51,9 +57,3 @@ npm run dev
 - NodeJS
 - MongoDB
 - Cloudinary 
-
-# Future Plans
-- Change to SQL database
-- Add ability to upload picture of new clothing
-- Add a closet buddy to talk to you using c.ai
-- Add SFX and colour themes
