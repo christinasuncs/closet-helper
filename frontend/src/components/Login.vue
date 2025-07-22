@@ -13,13 +13,15 @@
         <text-body-1>Password</text-body-1>
         <v-text-field
             label="Password"
-            type="text"
+            type="password"
             v-model="password"
             ></v-text-field>
         <v-btn
           color="primary"
           @click="login()"
           block
+          :loading="loading"
+          :readonly="loading"
         >Log in</v-btn>
       </v-col>
     </v-row>
@@ -39,16 +41,18 @@
         <v-row>
         <text-body-1>Username</text-body-1>
         <v-text-field
-            label="Username"
-            type="username"
-            ></v-text-field>
+          label="Username"
+          type="text"
+          v-model="newuser.username"
+        ></v-text-field>
         </v-row>
         <v-row>
         <text-body-1>Password</text-body-1>
         <v-text-field
-            label="Password"
-            type="password"
-            ></v-text-field>
+          label="Password"
+          type="text"
+          v-model="newuser.password"
+        ></v-text-field>
         <v-btn
           color="primary"
           @click="createAccount()"
@@ -77,12 +81,17 @@ export default {
   emits: ['login-success'],
   data() {
     return {
-        createAccountDialog: false,
-        username: '',
-        password: '',
+      createAccountDialog: false,
+      username: '',
+      password: '',
       snackbar: false,
       snackbarText: '',
       snackbarColor: 'success',
+      loading: false,
+      newuser: {
+        username: '',
+        password: ''
+      }
     }
   },
   mounted() {
@@ -94,12 +103,12 @@ export default {
   methods: {
     async login() {
       try {
+        this.loading = true
         const response = await axios.post('http://localhost:5000/api/accounts/login', {
           username: this.username,
           password: this.password
         },
         { withCredentials: true }); // Include credentials for session management
-        console.log('Login successful:', response.data);
         // Handle successful login (e.g., redirect, store token)
         this.snackbarText = 'Login successful!',
         this.snackbarColor = 'success';
@@ -107,6 +116,7 @@ export default {
         this.$emit('login-success');
         setTimeout(() => {
           this.$router.push('/'); // Redirect to closet after login
+          this.loading = false
         }, 1000); // Delay to show snackbar message  
       } catch (error) {
         console.error('Login failed:', error);
@@ -116,6 +126,29 @@ export default {
         this.snackbar = true;      
       }
     },
+    async createAccount() {
+      try {
+        this.loading = true;
+        console.log('Creating account with:', this.newuser);
+        const response = await axios.post('http://localhost:5000/api/accounts/register', {
+          username: this.newuser.username,
+          password: this.newuser.password
+        });
+        this.snackbarText = 'Account created successfully!';
+        this.snackbarColor = 'success';
+        this.snackbar = true;
+        this.createAccountDialog = false;
+        setTimeout(() => {
+          this.$router.push('/login'); // Redirect to login after account creation
+          this.loading = false;
+        }, 1000); // Delay to show snackbar message
+      } catch (error) {
+        console.error('Account creation failed:', error);
+        this.snackbarText = 'Account creation failed; please try again.';
+        this.snackbarColor = 'error';
+        this.snackbar = true;
+      }
+    }
   }
 }
 </script>

@@ -80,28 +80,37 @@
       </v-card>
     </v-dialog>
     <!-- first time user introducting feature modal, has 3 parts each explaining different features, similar to a slideshow -->
-    <v-dialog persistent v-model="firstTimeUser" max-width="600px">
+    <v-dialog :persistent="loggedIn" v-model="firstTimeUser" max-width="600px">
       <v-card>
-        <v-carousel>
+        <v-carousel progress="indeterminate" height="350px">
           <v-carousel-item>
-            <v-card-title>Welcome to the Outfit Generator!</v-card-title>
-            <v-card-text>This is a quick introduction to help you utilize this Outfit Generator Website to its fullest potential!</v-card-text>
+            <div class="carousel-center">
+              <v-card-title>Welcome to the Outfit Generator!</v-card-title>
+              <v-card-text>This is a quick introduction to help you utilize this Outfit Generator Website to its fullest potential!</v-card-text>
+            </div>
           </v-carousel-item>
           <v-carousel-item>
-            <v-card-text><b>Home</b> is where you can create new outfit combinations and save them to your <b>Outfits</b></v-card-text>
-            <v-card-text>You can create <b>tags</b> to help you organize your outfits</v-card-text>
-            <v-card-text>Use the <b>lock</b> icons to keep specific items in your outfit while generating new ones</v-card-text>
+            <div class="carousel-center">
+              <v-card-title>Home</v-card-title>
+              <v-card-text><b>Home</b> is where you can create new outfit combinations and save them to your <b>Outfits</b></v-card-text>
+              <v-card-text>You can create <b>tags</b> to help you organize your outfits</v-card-text>
+              <v-card-text>Use the <b>lock</b> icons to keep specific items in your outfit while generating new ones</v-card-text>
+            </div>
           </v-carousel-item>
           <v-carousel-item>
-            <v-card-title>Outfits</v-card-title>
-            <v-card-text>You can view, filter, and edit your previously saved outfit combinations in <b>Outfits</b></v-card-text>
+            <div class="carousel-center">
+              <v-card-title>Outfits</v-card-title>
+              <v-card-text>You can view, filter, and edit your previously saved outfit combinations in <b>Outfits</b></v-card-text>
+            </div>
           </v-carousel-item>
           <v-carousel-item>
-            <v-card-title>Closet</v-card-title>
-            <v-card-text>Upload your clothing and catagorize them to include them in your outfit combinations</v-card-text>
-            <v-card-text>Use the <b>filter</b> to find specific items in your closet</v-card-text>
-            <v-card-text>Use the <b>archive</b> to hide items you no longer want to see</v-card-text>
-            <v-btn block @click=firstTimeDone()>Got it!</v-btn>
+            <div class="carousel-center">
+              <v-card-title>Closet</v-card-title>
+              <v-card-text>Upload your clothing and catagorize them to include them in your outfit combinations</v-card-text>
+              <v-card-text>Use the <b>filter</b> to find specific items in your closet</v-card-text>
+              <v-card-text>Use the <b>archive</b> to hide items you no longer want to see</v-card-text>
+              <v-btn block @click=firstTimeDone()>Got it!</v-btn>
+            </div>
           </v-carousel-item>
         </v-carousel>
       </v-card>
@@ -155,8 +164,7 @@ export default {
         if (res.data.loggedIn) {
           this.loggedIn = true;
           this.user = res.data.user;
-          console.log(res.data);
-          this.firstTimeUser = res.data.firstTimeLogin; // Check if it's the first time user
+          this.firstTimeUser = res.data.user.firstTimeLogin; // Check if it's the first time user
         } else {
           this.loggedIn = false;
           this.user = null;
@@ -178,16 +186,18 @@ export default {
           images = await axios.get(`http://localhost:5000/api/images`);
         }
         images.data.forEach(image => {
-          if(image.type == "top") {
-            this.tops.push(image)
-          } else if (image.type == "bottom") {
-            this.bottoms.push(image)
-          } else if (image.type == "shoes") {
-            this.shoes.push(image)
-          } else if (image.type == "hat") {
-            this.hats.push(image)
-          } else if (image.type == "accessory") {
-            this.accessories.push(image)
+          if (!image.archived) {
+            if(image.type == "top") {
+              this.tops.push(image)
+            } else if (image.type == "bottom") {
+              this.bottoms.push(image)
+            } else if (image.type == "shoes") {
+              this.shoes.push(image)
+            } else if (image.type == "hat") {
+              this.hats.push(image)
+            } else if (image.type == "accessory") {
+              this.accessories.push(image)
+            }
           }
         });
       } catch (err) {
@@ -337,7 +347,6 @@ export default {
     async saveNewTag() {
       try {
         const newTag = {name: this.newTag, account_id: this.user && this.user.id ? this.user.id : null}
-        console.log("New Tag: ", newTag)
         await axios.post(`http://localhost:5000/api/tags/new`, newTag)
         this.loadTags()
         this.new_tag_dialog = false
@@ -359,5 +368,13 @@ export default {
 <style scoped>
 .v-container {
   width: 65%;
+}
+
+.carousel-center{
+  /* display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; */
+  padding: 10px 60px;
 }
 </style>

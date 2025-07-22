@@ -50,15 +50,14 @@ router.post("/login", async(req, res) => {
 );
 
 // check session endpoint
-router.get("/session", (req, res) => {
+router.get("/session", async(req, res) => {
     if (req.session.user) {
-        const account = Account.findById(req.session.user.id);
+        const account = await Account.findById(req.session.user.id);
         if (!account) {
             return res.status(404).json({ message: "Account not found" });
         }
-        console.log(account);
-        console.log(req.session.user);
-        res.json({ loggedIn: true, user: req.session.user, firstTimeLogin: account.firstTimeLogin });
+        req.session.user.firstTimeLogin = account.firstTimeLogin; // Update session with firstTimeLogin status
+        res.json({ loggedIn: true, user: req.session.user});
     } else {
         res.json({ loggedIn: false });
     }

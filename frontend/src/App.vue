@@ -39,7 +39,6 @@
       async handleLogout() {
         try {
           const response = await axios.post('http://localhost:5000/api/accounts/logout', {}, { withCredentials: true });
-          console.log('Logout successful:', response.data);
           // this.$router.push('/login');
         } catch (error) {
           console.error('Logout failed:', error);  
@@ -50,7 +49,6 @@
         // Check if user is logged in
         try {
           const response = await axios.get('http://localhost:5000/api/accounts/session', {withCredentials: true});
-          console.log('Session data:', response.data);
           this.loggedIn = response.data.loggedIn;
         } catch (error) {
           this.loggedIn = false;

@@ -380,16 +380,18 @@ export default {
           images = await axios.get(`http://localhost:5000/api/images`);
         }
         images.data.forEach(image => {
-          if(image.type == "top") {
-            this.tops.push(image)
-          } else if (image.type == "bottom") {
-            this.bottoms.push(image)
-          } else if (image.type == "shoes") {
-            this.shoes.push(image)
-          } else if (image.type == "hat") {
-            this.hats.push(image)
-          } else if (image.type == "accessory") {
-            this.accessories.push(image)
+          if(!image.archived) {
+            if(image.type == "top") {
+              this.tops.push(image)
+            } else if (image.type == "bottom") {
+              this.bottoms.push(image)
+            } else if (image.type == "shoes") {
+              this.shoes.push(image)
+            } else if (image.type == "hat") {
+              this.hats.push(image)
+            } else if (image.type == "accessory") {
+              this.accessories.push(image)
+            }
           }
         });
       } catch (err) {
@@ -471,11 +473,11 @@ export default {
           this.editedOutfit.accessory = this.editedOutfit.accessory._id
         }
 
-        console.log(this.editedOutfit)
         
         await axios.put(`http://localhost:5000/api/outfits/edit/${this.editedOutfit._id}`, this.editedOutfit)
         this.loadOutfits()
         this.edit_outfit_dialog = false
+        this.clearFilters()
       } catch (err) {
         console.log("Failed to save edited outfit: ", err)
       }
