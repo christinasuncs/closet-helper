@@ -12,6 +12,7 @@ const tag_routes = require('./routes/tag.js');
 const account_routes = require('./routes/account.js');
 
 const app = express()
+app.set('trust proxy', 1); // trust first proxy for secure cookies
 
 // Middleware
 app.use(express.json());
