@@ -16,14 +16,14 @@ const app = express()
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // frontend URL
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // frontend URL 
   credentials: true
 }))
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your-secret-key',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 } // 1 day
+  cookie: { secure: true, httpOnly: true, maxAge: 1000 * 60 * 60 * 24, sameSite: 'none'} // 1 day
 }));
 // Cloudinary configuration
 cloudinary.config({
