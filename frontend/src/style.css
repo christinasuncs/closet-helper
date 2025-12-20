@@ -28,6 +28,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background: #ffffff !important;
 }
 
 h1 {
@@ -64,6 +65,7 @@ button:focus-visible {
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  background: #ffffff !important;
 }
 
 @media (prefers-color-scheme: light) {
